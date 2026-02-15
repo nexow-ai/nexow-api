@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 import structlog
 import httpx
 
@@ -11,14 +11,17 @@ logger = structlog.get_logger(__name__)
 
 class Settings(BaseSettings):
     """Application settings."""
+
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+
     port: int = 8000
     environment: str = "development"
-    
-    # Internal service URLs
+
+    # Internal service URLs (override via env vars in production)
     nexow_agents_url: str = "http://localhost:8002"
     nexow_data_url: str = "http://localhost:8001"
     nexow_backtesting_url: str = "http://localhost:8003"
-    
+
     # CORS
     cors_origins: list[str] = ["*"]
 
